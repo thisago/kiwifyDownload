@@ -4,34 +4,23 @@ from std/os import createDir, `/`, sleep, fileExists
 from std/json import parseJson, items, `{}`, getStr, hasKey, `$`
 import std/osproc
 
-var bgDowns: seq[Process]
-
-proc downloadFile(url, dest: string; threads = 3) =
+proc downloadFile(url, dest: string) =
   if fileExists dest:
     echo "Skipping, file exists."
     return
-  proc cleanRan =
-    for i in countdown(bgDowns.len - 1, 0):
-      let bgDown = bgDowns[i]
-      if not bgDown.running:
-        echo bgDown.readLines[0].join "\l"
-        close bgDown
-        bgDowns.delete i
-  cleanRan()
-  if bgDowns.len >= threads:
-    while bgDowns.len >= threads:
-      cleanRan()
-      sleep 200
 
-  let cmd = fmt"""wget "{url}" -O "{dest}" """
+  let cmd = fmt"""wget "{url}" -O "{dest}_tmp" && mv "{dest}_tmp" "{dest}" """
   # let cmd = fmt"""echo 'wget "{url}" -O "{dest}" '"""
   echo cmd
-  bgDowns.add startProcess(
+  let down = startProcess(
     cmd,
     options = {poStdErrToStdOut, poUsePath, poEvalCommand, poDaemon}
   )
+  echo down.readLines[0].join "\l"
+  close down
+    
 
-proc kiwifyDownload*(jsonPath, output: string; threads = 3) =
+proc kiwifyDownload*(jsonPath, output: string) =
   ## Downloads using wget all videos of Kiwify course
   let
     json = readFile jsonPath
@@ -58,10 +47,10 @@ proc kiwifyDownload*(jsonPath, output: string; threads = 3) =
       writeFile(lessonPath / "lesson.json", $lesson)
       if lesson.hasKey "video":
         echo "  Starting download of '", lessonName, "' video and thumbnail"
-        downloadFile(lesson{"video", "download_link"}.getStr, lessonPath / lesson{"video", "name"}.getStr, threads)
+        downloadFile(lesson{"video", "download_link"}.getStr, lessonPath / lesson{"video", "name"}.getStr)
         let thumb = lesson{"video", "thumbnail"}.getStr
         if thumb.len > 0:
-          downloadFile(thumb, lessonPath / "thumbnail.png", threads)
+          downloadFile(thumb, lessonPath / "thumbnail.png")
       else:
         writeFile(lessonPath / "content.html", lesson{"content"}.getStr)
 
