@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 1.0.0 (Jul 29 2022)
+
+- First release
+- Added to readme a example of how files will be created
+
+---
+
 ## Version 0.3.0 (Jul 29 2022)
 
 - Now the videos is downloaded in the best resolution
