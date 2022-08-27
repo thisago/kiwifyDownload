@@ -28,7 +28,7 @@ output
                        └ thumbnail.png*
 [...]
 ```
-*: Can not exists
+*: Downloads if exists
 
 ## TODO
 
