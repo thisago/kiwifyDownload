@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 1.1.0 (Aug 27 2022)
+
+- Added `files` downloading
+- Fixed slow file checking
+- Removed duplicated file skipping error message
+- Fixed file skipping error message ident
+- Added line break between modules
+
+---
+
 ## Version 1.0.0 (Jul 29 2022)
 
 - First release
