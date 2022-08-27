@@ -32,7 +32,8 @@ output
 
 ## TODO
 
-- [ ] Download embed files in course
+- [x] Download embed files in course
+- [ ] Get the courses JSON file automatically by using the cookie
 
 ## License
 
