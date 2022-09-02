@@ -5,7 +5,7 @@ from std/json import parseJson, items, `{}`, getStr, hasKey, `$`
 from std/httpclient import newHttpClient, newHttpHeaders, getContent, close
 import std/osproc
 
-from pkg/vimeo import parseVimeo
+from pkg/vimeo import parseVimeo, maxQuality
 from pkg/util/forTerm import echoSingleLine
 from pkg/util/forFs import escapeFs
 
@@ -15,13 +15,7 @@ proc vimeoBestResolution(vimeoId: string): string =
     client = newHttpClient(headers = newHttpHeaders({
       "referer": "https://dashboard.kiwify.com.br"
     }))
-    vimeoData = parseVimeo client.getContent "https://player.vimeo.com/video/" & vimeoId
-  var max: tuple[quality, index: int]
-  for i, vid in vimeoData.videos:
-    let quality = vid.quality.strip(chars = AllChars - Digits).parseInt
-    if quality > max.quality:
-      max = (quality, i)
-  result = vimeoData.videos[max.index].url
+  result = maxQuality(parseVimeo client.getContent "https://player.vimeo.com/video/" & vimeoId).url
 
 proc downloadFile(url, dest: string; vimeo = false): bool =
   result = true
