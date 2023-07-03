@@ -2,34 +2,23 @@ from std/strformat import fmt
 from std/strutils import join, parseInt, strip, AllChars, Digits
 from std/os import createDir, `/`, fileExists
 from std/json import parseJson, items, `{}`, getStr, hasKey, `$`
-from std/httpclient import newHttpClient, newHttpHeaders, getContent, close
 import std/osproc
 
-from pkg/vimeo import parseVimeo, maxQuality
 from pkg/util/forTerm import echoSingleLine
 from pkg/util/forFs import escapeFs
 
-proc vimeoBestResolution(vimeoId: string): string =
-  ## Gets the best resolution video from Vimeo page
-  let
-    client = newHttpClient(headers = newHttpHeaders({
-      "referer": "https://dashboard.kiwify.com.br"
-    }))
-  result = maxQuality(parseVimeo client.getContent "https://player.vimeo.com/video/" & vimeoId).url
-
-proc downloadFile(url, dest: string; vimeo = false): bool =
+proc downloadFile(url, dest: string): bool =
   result = true
   if fileExists dest:
     echo "    Skipping, file exists."
     return false
-  var u = url
-  if vimeo:
-    u = url.vimeoBestResolution
-  let cmd = fmt"""wget "{u}" -O "{dest}_tmp" && mv "{dest}_tmp" "{dest}" """
-  let down = startProcess(
-    cmd,
-    options = {poStdErrToStdOut, poUsePath, poEvalCommand, poDaemon}
-  )
+  let
+    u = url
+    cmd = fmt"""wget "{u}" -O "{dest}_tmp" && mv "{dest}_tmp" "{dest}" """
+    down = startProcess(
+      cmd,
+      options = {poStdErrToStdOut, poUsePath, poEvalCommand, poDaemon}
+    )
   for line in down.lines:
     echoSingleLine line
   echo ""
@@ -62,7 +51,7 @@ proc kiwifyDownload*(jsonPath, output: string) =
       writeFile(lessonPath / "lesson.json", $lesson)
       if lesson.hasKey "video":
         echo "  Starting download of '", lessonName, "' video and thumbnail"
-        let ok = downloadFile(lesson{"video", "external_id"}.getStr, lessonPath / lesson{"video", "name"}.getStr, true)
+        let ok = downloadFile(lesson{"video", "download_link"}.getStr, lessonPath / lesson{"video", "name"}.getStr)
         let thumb = lesson{"video", "thumbnail"}.getStr
         if ok and thumb.len > 0:
           discard downloadFile(thumb, lessonPath / "thumbnail.png")

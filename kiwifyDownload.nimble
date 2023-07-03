@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.1.0"
+version       = "1.2.0"
 author        = "Thiago Navarro"
 description   = "Downloads the kiwify videos from course JSON"
 license       = "MIT"
@@ -13,4 +13,4 @@ binDir = "build"
 
 requires "nim >= 1.6.4"
 requires "cligen"
-requires "vimeo", "util"
+requires "util"

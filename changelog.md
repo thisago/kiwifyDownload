@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.2.0 (03/06/2023)
+
+- Removed Vimeo parsing, fixed downloading
+
 ## Version 1.1.0 (Aug 27 2022)
 
 - Added `files` downloading
