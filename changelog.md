@@ -1,6 +1,10 @@
 # Changelog
 
-## Version 1.2.0 (03/06/2023)
+## Version 1.2.2 (24/09/2023)
+
+- Added support for courses with sections
+
+## Version 1.2.0 (24/09/2023)
 
 - Removed Vimeo parsing, fixed downloading
 

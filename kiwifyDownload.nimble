@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.2.0"
+version       = "1.2.2"
 author        = "Thiago Navarro"
 description   = "Downloads the kiwify videos from course JSON"
 license       = "MIT"
