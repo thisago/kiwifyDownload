@@ -68,7 +68,6 @@ proc kiwifyDownload*(jsonPath, output: string) =
   let course = node{"course"}
   if course.hasKey "sections":
     for section in course{"sections"}:
-      echo section
       downModule section{"modules"}
   else:
     downModule course{"modules"}
