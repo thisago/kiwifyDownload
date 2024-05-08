@@ -51,9 +51,10 @@ proc kiwifyDownload*(jsonPath, output: string) =
         writeFile(lessonPath / "lesson.json", $lesson)
         if lesson.hasKey "video":
           echo "  Starting download of '", lessonName, "' video and thumbnail"
-          let ok = downloadFile(lesson{"video", "download_link"}.getStr, lessonPath / lesson{"video", "name"}.getStr)
+          let ok = downloadFile(lesson{"video", "download_link"}.getStr,
+              lessonPath / lesson{"video", "name"}.getStr)
           let thumb = lesson{"video", "thumbnail"}.getStr
-          if ok and thumb.len > 0:
+          if thumb.len > 0:
             discard downloadFile(thumb, lessonPath / "thumbnail.png")
         elif lesson.hasKey "files":
           echo "  Starting download of '", lessonName, "' files"
