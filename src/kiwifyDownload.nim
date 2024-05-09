@@ -7,6 +7,22 @@ import std/osproc
 from pkg/util/forTerm import echoSingleLine
 from pkg/util/forFs import escapeFs
 
+proc downloadStream(url, dest: string): bool =
+  result = true
+  if fileExists dest:
+    echo "    Skipping, file exists."
+    return false
+  let
+    cmd = fmt"""ffmpeg -protocol_whitelist file,http,https,tcp,tls -allowed_extensions ALL -i {url} -bsf:a aac_adtstoasc -c copy "{dest}_tmp" && mv "{dest}_tmp" "{dest}""""
+    down = startProcess(
+      cmd,
+      options = {poStdErrToStdOut, poUsePath, poEvalCommand, poDaemon}
+    )
+  for line in down.lines:
+    echoSingleLine line
+  echo ""
+  close down
+
 proc downloadFile(url, dest: string): bool =
   result = true
   if fileExists dest:
@@ -51,7 +67,7 @@ proc kiwifyDownload*(jsonPath, output: string) =
         writeFile(lessonPath / "lesson.json", $lesson)
         if lesson.hasKey "video":
           echo "  Starting download of '", lessonName, "' video and thumbnail"
-          let ok = downloadFile(lesson{"video", "download_link"}.getStr,
+          let ok = downloadStream(lesson{"video", "stream_link"}.getStr,
               lessonPath / lesson{"video", "name"}.getStr)
           let thumb = lesson{"video", "thumbnail"}.getStr
           if thumb.len > 0:
