@@ -1,6 +1,6 @@
 from std/strformat import fmt
 from std/strutils import join, parseInt, strip, AllChars, Digits
-from std/os import createDir, `/`, fileExists
+from std/os import createDir, `/`, fileExists, splitFile
 from std/json import parseJson, items, `{}`, getStr, hasKey, `$`, JsonNode
 import std/osproc
 
@@ -13,7 +13,9 @@ proc downloadStream(url, dest: string): bool =
     echo "    Skipping, file exists."
     return false
   let
-    cmd = fmt"""ffmpeg -protocol_whitelist file,http,https,tcp,tls -allowed_extensions ALL -i {url} -bsf:a aac_adtstoasc -c copy "tmp_{dest}" && mv "tmp_{dest}" "{dest}""""
+    destParts = splitFile dest
+    tmpDest = fmt"{destParts.dir}/{destParts.name}_tmp{destParts.ext}"
+    cmd = fmt"""ffmpeg -protocol_whitelist file,http,https,tcp,tls -allowed_extensions ALL -i {url} -bsf:a aac_adtstoasc -c copy "{tmpDest}" && mv "{tmpDest}" "{dest}""""
     down = startProcess(
       cmd,
       options = {poStdErrToStdOut, poUsePath, poEvalCommand, poDaemon}
@@ -30,7 +32,7 @@ proc downloadFile(url, dest: string): bool =
     return false
   let
     u = url
-    cmd = fmt"""wget "{u}" -O "tmp_{dest}" && mv "tmp_{dest}" "{dest}" """
+    cmd = fmt"""wget "{u}" -O "{dest}_tmp" && mv "{dest}_tmp" "{dest}" """
     down = startProcess(
       cmd,
       options = {poStdErrToStdOut, poUsePath, poEvalCommand, poDaemon}
