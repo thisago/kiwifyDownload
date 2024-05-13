@@ -13,7 +13,7 @@ proc downloadStream(url, dest: string): bool =
     echo "    Skipping, file exists."
     return false
   let
-    cmd = fmt"""ffmpeg -protocol_whitelist file,http,https,tcp,tls -allowed_extensions ALL -i {url} -bsf:a aac_adtstoasc -c copy "{dest}_tmp" && mv "{dest}_tmp" "{dest}""""
+    cmd = fmt"""ffmpeg -protocol_whitelist file,http,https,tcp,tls -allowed_extensions ALL -i {url} -bsf:a aac_adtstoasc -c copy "tmp_{dest}" && mv "tmp_{dest}" "{dest}""""
     down = startProcess(
       cmd,
       options = {poStdErrToStdOut, poUsePath, poEvalCommand, poDaemon}
@@ -30,7 +30,7 @@ proc downloadFile(url, dest: string): bool =
     return false
   let
     u = url
-    cmd = fmt"""wget "{u}" -O "{dest}_tmp" && mv "{dest}_tmp" "{dest}" """
+    cmd = fmt"""wget "{u}" -O "tmp_{dest}" && mv "tmp_{dest}" "{dest}" """
     down = startProcess(
       cmd,
       options = {poStdErrToStdOut, poUsePath, poEvalCommand, poDaemon}
